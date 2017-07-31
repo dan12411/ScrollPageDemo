@@ -74,7 +74,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        scrollView.contentSize = CGSize(width: scrollView.bounds.size.width * CGFloat(self.pageCount),
+        scrollView.contentSize = CGSize(width: UIScreen.main.bounds.width * CGFloat(self.pageCount),
                                                  height: scrollView.bounds.size.height)
         scrollView.isPagingEnabled = true
         scrollView.delegate = self
@@ -91,7 +91,7 @@ class ViewController: UIViewController {
         secondVC.willMove(toParentViewController: self)
         
         firstVC.view.frame.origin = CGPoint.zero
-        secondVC.view.frame.origin = CGPoint(x: scrollView.bounds.size.width, y: 0)
+        secondVC.view.frame.origin = CGPoint(x: UIScreen.main.bounds.width, y: 0)
         
         getDataFrom("https://tw.news.yahoo.com/rss/movies") {  data in
             self.firstVC.objects = data
@@ -118,7 +118,7 @@ class ViewController: UIViewController {
     @IBAction func tapButtonAction(_ sender: UIButton) {
         currentPage = sender.tag - 1
         
-        let offset = scrollView.bounds.width * CGFloat(currentPage)
+        let offset = UIScreen.main.bounds.width * CGFloat(currentPage)
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut, animations: {
             self.scrollView.contentOffset.x = offset
         })
@@ -127,35 +127,8 @@ class ViewController: UIViewController {
 
 extension ViewController: UIScrollViewDelegate {
     
-    func loadScrollViewWithPage(page:Int) {
-        if page < 0 || page >= self.pageCount {
-            return
-        } else if self.pageDic[page] == nil {
-            print("add page \(page)")
-            
-            let imageView = UIImageView(frame: CGRect(x: scrollView.bounds.size.width * CGFloat(page),
-                                                      y: 0,
-                                                      width: scrollView.bounds.size.width,
-                                                      height: scrollView.bounds.size.height ))
-            imageView.contentMode = .scaleAspectFit
-            imageView.image = UIImage(named: "pic\(page)")
-            scrollView.addSubview(imageView)
-            pageDic[page] = imageView
-        }
-    }
-    
-    func removeScrollViewWithPage(page:Int) {
-        if page < 0 || page >= pageCount {
-            return
-        } else if pageDic[page] != nil {
-            print("remove page \(page)")
-            pageDic[page]?.removeFromSuperview()
-            pageDic[page] = nil
-        }
-    }
-    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let pageWidth = scrollView.frame.size.width
+        let pageWidth = UIScreen.main.bounds.width
         let page = Int(floor((scrollView.contentOffset.x - pageWidth / 2) /
             pageWidth)) + 1
         currentPage = page
