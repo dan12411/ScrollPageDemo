@@ -13,8 +13,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet var indicatorBtns: [UIButton]!
     
-    var pageControl: UIPageControl!
-    var pageDic = [Int:UIImageView]()
     var pageCount = 2
     
     var firstVC: FirstViewController!
@@ -73,9 +71,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        scrollView.contentSize = CGSize(width: UIScreen.main.bounds.width * CGFloat(self.pageCount),
-                                                 height: scrollView.bounds.size.height)
+        print("UIScreen's width: \(UIScreen.main.bounds.width)")
+        scrollView.contentSize = CGSize(width: UIScreen.main.bounds.width * CGFloat(self.pageCount), height: scrollView.bounds.size.height)
         scrollView.isPagingEnabled = true
         scrollView.delegate = self
         
@@ -89,9 +86,20 @@ class ViewController: UIViewController {
         self.addChildViewController(secondVC)
         self.scrollView.addSubview(secondVC.view)
         secondVC.willMove(toParentViewController: self)
+        firstVC.view.translatesAutoresizingMaskIntoConstraints = false
+        secondVC.view.translatesAutoresizingMaskIntoConstraints = false
         
         firstVC.view.frame.origin = CGPoint.zero
+        NSLayoutConstraint(item: firstVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
+        NSLayoutConstraint(item: firstVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
+        NSLayoutConstraint(item: firstVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: firstVC.view, attribute: .leading, relatedBy: .equal, toItem: scrollView, attribute: .leading, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: firstVC.view, attribute: .trailing, relatedBy: .equal, toItem: secondVC.view, attribute: .leading, multiplier: 1, constant: 0).isActive = true
+        
         secondVC.view.frame.origin = CGPoint(x: UIScreen.main.bounds.width, y: 0)
+        NSLayoutConstraint(item: secondVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
+        NSLayoutConstraint(item: secondVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
+        NSLayoutConstraint(item: secondVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
         
         getDataFrom("https://tw.news.yahoo.com/rss/movies") {  data in
             self.firstVC.objects = data
@@ -131,6 +139,9 @@ extension ViewController: UIScrollViewDelegate {
         let pageWidth = UIScreen.main.bounds.width
         let page = Int(floor((scrollView.contentOffset.x - pageWidth / 2) /
             pageWidth)) + 1
+        guard page < pageCount else {
+            return
+        }
         currentPage = page
     }
     
