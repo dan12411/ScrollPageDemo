@@ -12,9 +12,13 @@ class SecondViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
     
+    var objects = [NewsItem]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        tableView.delegate = self
+        tableView.dataSource = self
     }
 
 }
@@ -26,13 +30,15 @@ extension SecondViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return objects.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell")
+        let cell = UITableViewCell()
         
-        return cell!
+        cell.textLabel?.text = objects[indexPath.row].title
+        
+        return cell
     }
     
 }

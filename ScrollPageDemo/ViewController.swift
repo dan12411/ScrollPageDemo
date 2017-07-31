@@ -25,15 +25,50 @@ class ViewController: UIViewController {
     var currentPage: Int = 0 {
         didSet {
             setButtonTitleColor()
-//            let offset = scrollView.bounds.width * CGFloat(currentPage)
-//            scrollView.contentOffset.x = offset
             lastPage = currentPage
         }
     }
     
+    // For Download URLSession
+    lazy var session: URLSession = {
+        return URLSession(configuration: .default)
+    }()
+    
     private func setButtonTitleColor() {
-        self.indicatorBtns[self.lastPage].setTitleColor(UIColor.lightGray, for: UIControlState())
+        self.indicatorBtns[self.lastPage].setTitleColor(UIColor.darkGray, for: UIControlState())
         self.indicatorBtns[self.currentPage].setTitleColor(UIColor.blue, for: UIControlState())
+    }
+    
+    private func getDataFrom(_ url: String, completionHandler: @escaping ([NewsItem])->Void){
+        if let url = URL(string: url) {
+            let task = session.dataTask(with: url, completionHandler: {
+                (data, response, error) in
+                
+                if error != nil {
+                    // if error, return
+                    return
+                } else {
+                    // if no error, analysis data
+                    if let okData = data {
+                        let xmlString = NSString(data: okData, encoding: String.Encoding.utf8.rawValue)
+                        print(xmlString as Any)
+                        let parser = XMLParser(data: okData)
+                        let parseDelegate = RSSParseDelegate()
+                        parser.delegate = parseDelegate
+                        
+                        if parser.parse() == true {
+                            // if analysis ok
+                            print("===Pasre ok!===")
+                            completionHandler(parseDelegate.getResult())
+                        } else {
+                            print("===Fail!===")
+                        }
+                    }
+                    
+                }
+            })
+            task.resume()
+        }
     }
     
     override func viewDidLoad() {
@@ -43,9 +78,6 @@ class ViewController: UIViewController {
                                                  height: scrollView.bounds.size.height)
         scrollView.isPagingEnabled = true
         scrollView.delegate = self
-        
-//        loadScrollViewWithPage(page:0)
-//        loadScrollViewWithPage(page:1)
         
         initializeViewControllers()
         setButtonTitleColor()
@@ -60,6 +92,20 @@ class ViewController: UIViewController {
         
         firstVC.view.frame.origin = CGPoint.zero
         secondVC.view.frame.origin = CGPoint(x: scrollView.bounds.size.width, y: 0)
+        
+        getDataFrom("https://tw.news.yahoo.com/rss/movies") {  data in
+            self.firstVC.objects = data
+            DispatchQueue.main.async {
+                self.firstVC.tableView.reloadData()
+            }
+        }
+        getDataFrom("https://tw.news.yahoo.com/rss/society") { data in
+            self.secondVC.objects = data
+            DispatchQueue.main.async {
+                self.secondVC.tableView.reloadData()
+            }
+        }
+        
     }
     
     func initializeViewControllers() {
@@ -112,16 +158,7 @@ extension ViewController: UIScrollViewDelegate {
         let pageWidth = scrollView.frame.size.width
         let page = Int(floor((scrollView.contentOffset.x - pageWidth / 2) /
             pageWidth)) + 1
-//        pageControl.currentPage = page
         currentPage = page
-        print(page)
-        
-//        loadScrollViewWithPage(page: page - 1)
-//        loadScrollViewWithPage(page: page)
-//        loadScrollViewWithPage(page: page + 1)
-//        
-//        removeScrollViewWithPage(page: page - 2)
-//        removeScrollViewWithPage(page: page + 2)
     }
     
 }
