@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5611A56D1F2EEB570081B980 /* NewsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5611A56C1F2EEB570081B980 /* NewsItem.swift */; };
 		5611A56F1F2EEB7A0081B980 /* RSSParseDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5611A56E1F2EEB7A0081B980 /* RSSParseDelegate.swift */; };
+		5624727A1F306E03009BC451 /* HealthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 562472791F306E03009BC451 /* HealthViewController.swift */; };
 		56BB7E151F2ECB2F00564BA5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BB7E141F2ECB2F00564BA5 /* AppDelegate.swift */; };
 		56BB7E171F2ECB2F00564BA5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BB7E161F2ECB2F00564BA5 /* ViewController.swift */; };
 		56BB7E1A1F2ECB2F00564BA5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56BB7E181F2ECB2F00564BA5 /* Main.storyboard */; };
@@ -22,6 +23,7 @@
 /* Begin PBXFileReference section */
 		5611A56C1F2EEB570081B980 /* NewsItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsItem.swift; sourceTree = "<group>"; };
 		5611A56E1F2EEB7A0081B980 /* RSSParseDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSSParseDelegate.swift; sourceTree = "<group>"; };
+		562472791F306E03009BC451 /* HealthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthViewController.swift; sourceTree = "<group>"; };
 		56BB7E111F2ECB2F00564BA5 /* ScrollPageDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScrollPageDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56BB7E141F2ECB2F00564BA5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56BB7E161F2ECB2F00564BA5 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 				56BB7E2A1F2ED51F00564BA5 /* FirstViewController.swift */,
 				56BB7E2C1F2ED6CE00564BA5 /* SecondViewController.swift */,
 				56BB7E281F2ED45300564BA5 /* UIStoryboard+Extension.swift */,
+				562472791F306E03009BC451 /* HealthViewController.swift */,
 				56BB7E181F2ECB2F00564BA5 /* Main.storyboard */,
 				5611A56C1F2EEB570081B980 /* NewsItem.swift */,
 				5611A56E1F2EEB7A0081B980 /* RSSParseDelegate.swift */,
@@ -154,6 +157,7 @@
 			files = (
 				5611A56F1F2EEB7A0081B980 /* RSSParseDelegate.swift in Sources */,
 				56BB7E171F2ECB2F00564BA5 /* ViewController.swift in Sources */,
+				5624727A1F306E03009BC451 /* HealthViewController.swift in Sources */,
 				5611A56D1F2EEB570081B980 /* NewsItem.swift in Sources */,
 				56BB7E151F2ECB2F00564BA5 /* AppDelegate.swift in Sources */,
 				56BB7E291F2ED45300564BA5 /* UIStoryboard+Extension.swift in Sources */,

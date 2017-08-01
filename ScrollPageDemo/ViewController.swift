@@ -13,10 +13,11 @@ class ViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet var indicatorBtns: [UIButton]!
     
-    var pageCount = 2
+    var pageCount = 3
     
     var firstVC: FirstViewController!
     var secondVC: SecondViewController!
+    var thirdVC: HealthViewController!
     var viewControllers = [UIViewController]()
     
     var lastPage = 0
@@ -32,9 +33,60 @@ class ViewController: UIViewController {
         return URLSession(configuration: .default)
     }()
     
+    private func setUpScrollView() {
+        scrollView.contentSize = CGSize(width: UIScreen.main.bounds.width * CGFloat(self.pageCount), height: scrollView.bounds.size.height)
+        scrollView.isPagingEnabled = true
+        scrollView.delegate = self
+    }
+    
+    private func initializeViewControllers() {
+        firstVC = UIStoryboard.initializeViewController(FirstViewController.self)
+        secondVC = UIStoryboard.initializeViewController(SecondViewController.self)
+        thirdVC = UIStoryboard.initializeViewController(HealthViewController.self)
+        viewControllers.append(firstVC)
+        viewControllers.append(secondVC)
+        viewControllers.append(thirdVC)
+    }
+    
     private func setButtonTitleColor() {
-        self.indicatorBtns[self.lastPage].setTitleColor(UIColor.darkGray, for: UIControlState())
-        self.indicatorBtns[self.currentPage].setTitleColor(UIColor.blue, for: UIControlState())
+        self.indicatorBtns[self.lastPage].setTitleColor(UIColor.lightGray, for: UIControlState())
+        self.indicatorBtns[self.currentPage].setTitleColor(UIColor.orange, for: UIControlState())
+    }
+    
+    private func addViewControllersConstraints() {
+        self.addChildViewController(firstVC)
+        self.scrollView.addSubview(firstVC.view)
+        firstVC.willMove(toParentViewController: self)
+        
+        self.addChildViewController(secondVC)
+        self.scrollView.addSubview(secondVC.view)
+        secondVC.willMove(toParentViewController: self)
+        
+        self.addChildViewController(thirdVC)
+        self.scrollView.addSubview(thirdVC.view)
+        thirdVC.willMove(toParentViewController: self)
+        
+        firstVC.view.translatesAutoresizingMaskIntoConstraints = false
+        secondVC.view.translatesAutoresizingMaskIntoConstraints = false
+        thirdVC.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        firstVC.view.frame.origin = CGPoint.zero
+        NSLayoutConstraint(item: firstVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
+        NSLayoutConstraint(item: firstVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
+        NSLayoutConstraint(item: firstVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: firstVC.view, attribute: .leading, relatedBy: .equal, toItem: scrollView, attribute: .leading, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: firstVC.view, attribute: .trailing, relatedBy: .equal, toItem: secondVC.view, attribute: .leading, multiplier: 1, constant: 0).isActive = true
+        
+        secondVC.view.frame.origin = CGPoint(x: UIScreen.main.bounds.width, y: 0)
+        NSLayoutConstraint(item: secondVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
+        NSLayoutConstraint(item: secondVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
+        NSLayoutConstraint(item: secondVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: secondVC.view, attribute: .trailing, relatedBy: .equal, toItem: thirdVC.view, attribute: .leading, multiplier: 1, constant: 0).isActive = true
+        
+        thirdVC.view.frame.origin = CGPoint(x: UIScreen.main.bounds.width * CGFloat(2), y: 0)
+        NSLayoutConstraint(item: thirdVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
+        NSLayoutConstraint(item: thirdVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
+        NSLayoutConstraint(item: thirdVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
     }
     
     private func getDataFrom(_ url: String, completionHandler: @escaping ([NewsItem])->Void){
@@ -69,38 +121,7 @@ class ViewController: UIViewController {
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        print("UIScreen's width: \(UIScreen.main.bounds.width)")
-        scrollView.contentSize = CGSize(width: UIScreen.main.bounds.width * CGFloat(self.pageCount), height: scrollView.bounds.size.height)
-        scrollView.isPagingEnabled = true
-        scrollView.delegate = self
-        
-        initializeViewControllers()
-        setButtonTitleColor()
-        
-        self.addChildViewController(firstVC)
-        self.scrollView.addSubview(firstVC.view)
-        firstVC.willMove(toParentViewController: self)
-        
-        self.addChildViewController(secondVC)
-        self.scrollView.addSubview(secondVC.view)
-        secondVC.willMove(toParentViewController: self)
-        firstVC.view.translatesAutoresizingMaskIntoConstraints = false
-        secondVC.view.translatesAutoresizingMaskIntoConstraints = false
-        
-        firstVC.view.frame.origin = CGPoint.zero
-        NSLayoutConstraint(item: firstVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
-        NSLayoutConstraint(item: firstVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
-        NSLayoutConstraint(item: firstVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: firstVC.view, attribute: .leading, relatedBy: .equal, toItem: scrollView, attribute: .leading, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: firstVC.view, attribute: .trailing, relatedBy: .equal, toItem: secondVC.view, attribute: .leading, multiplier: 1, constant: 0).isActive = true
-        
-        secondVC.view.frame.origin = CGPoint(x: UIScreen.main.bounds.width, y: 0)
-        NSLayoutConstraint(item: secondVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
-        NSLayoutConstraint(item: secondVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
-        NSLayoutConstraint(item: secondVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
-        
+    private func getYahooData() {
         getDataFrom("https://tw.news.yahoo.com/rss/movies") {  data in
             self.firstVC.objects = data
             DispatchQueue.main.async {
@@ -113,14 +134,23 @@ class ViewController: UIViewController {
                 self.secondVC.tableView.reloadData()
             }
         }
-        
+        getDataFrom("https://tw.news.yahoo.com/rss/health") { data in
+            self.thirdVC.objects = data
+            DispatchQueue.main.async {
+                self.thirdVC.tableView.reloadData()
+            }
+        }
     }
     
-    func initializeViewControllers() {
-        firstVC = UIStoryboard.initializeViewController(FirstViewController.self)
-        secondVC = UIStoryboard.initializeViewController(SecondViewController.self)
-        viewControllers.append(firstVC)
-        viewControllers.append(secondVC)
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setUpScrollView()
+        initializeViewControllers()
+        setButtonTitleColor()
+        
+        addViewControllersConstraints()
+        getYahooData()
     }
 
     @IBAction func tapButtonAction(_ sender: UIButton) {
@@ -131,7 +161,13 @@ class ViewController: UIViewController {
             self.scrollView.contentOffset.x = offset
         })
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
 }
+
+//MARK: - UIScrollViewDelegate
 
 extension ViewController: UIScrollViewDelegate {
     
