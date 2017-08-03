@@ -69,9 +69,9 @@ open class SwipeableTableViewController: UIViewController {
     open var selectionBarHeight: CGFloat = 4.0
     
     /** To set the background color of the tab bar.
-     Default color is blue color. You can change the color as per your need.
+     Default color is black color. You can change the color as per your need.
      */
-    open let defaultSegmentBarBgColor = UIColor.blue
+    open let defaultSegmentBarBgColor = UIColor.black
     
     /** To set the background color of the selection bar.
      Default color is red color. You can change the color as per your need.
@@ -79,9 +79,9 @@ open class SwipeableTableViewController: UIViewController {
     open let defaultSelectionBarBgColor = UIColor.red
     
     /** To set the background color of the selection bar.
-     Default color is red color. You can change the color as per your need.
+     Default color is orange color. You can change the color as per your need.
      */
-    open let defaultSelectedButtonForegroundColor = UIColor.white
+    open let defaultSelectedButtonForegroundColor = UIColor.orange
     
     /** To set the background color of the selection bar.
      Default color is red color. You can change the color as per your need.
@@ -134,7 +134,13 @@ open class SwipeableTableViewController: UIViewController {
     fileprivate lazy var selectionBar = UIView()
     
     fileprivate var buttonsFrameArray = [CGRect]()
-    open var currentPageIndex = 0
+    fileprivate var lastPageIndex = 0
+    open var currentPageIndex = 0 {
+        didSet {
+            updateButtonColorOnSelection()
+            lastPageIndex = currentPageIndex
+        }
+    }
     fileprivate let contentSizeOffset: CGFloat = 10.0
     fileprivate var pageScrollView: UIScrollView!
     
@@ -168,11 +174,30 @@ open class SwipeableTableViewController: UIViewController {
         self.view.addSubview(segmentBarView)
         
         setUpScrollView()
+        if viewControllerAtIndex(0) != nil {
+            var viewControllers = [UIViewController]()
+
+            
+            guard let titleBarDataSource = titleBarDataSource else { return }
+            for i in 0 ..< titleBarDataSource.count {
+                if let viewController = viewControllerAtIndex(i) {
+                    viewControllers.append(viewController)
+                }
+            }
+            for i in 0 ..< titleBarDataSource.count {
+                self.addChildViewController(viewControllers[i])
+                self.pageScrollView.addSubview(viewControllers[i].view)
+
+                let pageViewSize = CGSize(width: self.view.frame.width, height: self.view.frame.height-segementBarHeight)
+                viewControllers[i].view.sizeThatFits(pageViewSize)
+                viewControllers[i].view.frame.origin = CGPoint(x: UIScreen.main.bounds.width * CGFloat(i), y: 0)
+                viewControllers[i].didMove(toParentViewController: self)
+            }
+        }
     }
     
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        syncScrollView()
         setupSegmentBar()
     }
     
@@ -314,6 +339,17 @@ open class SwipeableTableViewController: UIViewController {
         return buttonWidth ?? ceil((text as NSString).size(attributes: [NSFontAttributeName: UIFont.systemFont(ofSize: 17.0)]).width)
     }
     
+    fileprivate func updateButtonColorOnSelection() {
+        var indicatorBtns = [UIButton]()
+        for button in segmentBarView.subviews {
+            if button is UIButton {
+                indicatorBtns.append(button as! UIButton)
+            }
+        }
+        indicatorBtns[self.lastPageIndex].setTitleColor(UIColor.lightGray, for: UIControlState())
+        indicatorBtns[self.currentPageIndex].setTitleColor(UIColor.orange, for: UIControlState())
+    }
+    
     fileprivate func viewControllerAtIndex(_ index: Int) -> UIViewController? {
         guard let titleBarDataSource = titleBarDataSource else { return nil }
         if titleBarDataSource.count == 0 || index >= titleBarDataSource.count {
@@ -324,19 +360,20 @@ open class SwipeableTableViewController: UIViewController {
         return viewController
     }
     
-    fileprivate func syncScrollView() {
-//        for view: UIView in (pageViewController?.view.subviews)!
-//        {
-//            if view is UIScrollView {
-//                pageScrollView = view as? UIScrollView
-//                pageScrollView?.delegate = self
-//            }
-//        }
-    }
-    
     //MARK : Segment Button Action
     func didSegmentButtonTap(_ sender: UIButton) {
-
+        currentPageIndex = sender.tag
+        
+        let offset = UIScreen.main.bounds.width * CGFloat(currentPageIndex)
+        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut, animations: {
+            self.pageScrollView.contentOffset.x = offset
+        })
+        
+        let xFromCenter: CGFloat = (self.pageScrollView.frame.size.width * CGFloat(currentPageIndex)) - self.pageScrollView.contentOffset.x
+        let xCoor = buttonsFrameArray[currentPageIndex].origin.x
+        UIView.animate(withDuration: 0.05) { [unowned self] in
+            self.selectionBar.frame = CGRect(x: xCoor-xFromCenter/kSelectionBarSwipeConstant, y: self.selectionBar.frame.origin.y, width: self.buttonsFrameArray[self.currentPageIndex].size.width, height: self.selectionBar.frame.size.height)
+        }
     }
 
 }
@@ -345,9 +382,18 @@ open class SwipeableTableViewController: UIViewController {
 
 extension SwipeableTableViewController: UIScrollViewDelegate {
     
-    open func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let xFromCenter:CGFloat = self.view.frame.size.width-scrollView.contentOffset.x
-        let xCoor = buttonsFrameArray[currentPageIndex].origin.x;
+    open func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let pageWidth = UIScreen.main.bounds.width
+        let page = Int(floor((scrollView.contentOffset.x - pageWidth / 2) /
+            pageWidth)) + 1
+        guard let titleBarDataSource = titleBarDataSource else { return }
+        guard page < titleBarDataSource.count && page > -1  else {
+            return
+        }
+        currentPageIndex = page
+        
+        let xFromCenter: CGFloat = (self.pageScrollView.frame.size.width * CGFloat(currentPageIndex)) - scrollView.contentOffset.x
+        let xCoor = buttonsFrameArray[currentPageIndex].origin.x
         UIView.animate(withDuration: 0.05) { [unowned self] in
             self.selectionBar.frame = CGRect(x: xCoor-xFromCenter/kSelectionBarSwipeConstant, y: self.selectionBar.frame.origin.y, width: self.buttonsFrameArray[self.currentPageIndex].size.width, height: self.selectionBar.frame.size.height)
         }

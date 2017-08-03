@@ -12,9 +12,13 @@ class DemoSwipeableTableViewController: UIViewController {
     
     let swipeableView = SwipeableTableViewController()
     
-    let titleBarDataSource = ["Movies", "Society", "Health","Movies", "Society", "Health"]
+    let titleBarDataSource = ["Movies", "Society", "Health"]
     
     var viewControllerDataSourceCollection = [["Delhi", "Gurgaon", "Noida"], ["Mumbai", "Bandra", "Andheri", "Dadar"], ["Banglore", "Kormangala", "Marathalli"]]
+    
+    var firstVC: ListViewController!
+    var secondVC: ListViewController!
+    var thirdVC: ListViewController!
     
     // For Download URLSession
     lazy var session: URLSession = {
@@ -72,22 +76,32 @@ extension DemoSwipeableTableViewController: SwipeableTableViewControllerDelegate
     func didLoadViewControllerAtIndex(_ index: Int) -> UIViewController{
         switch index{
         case 0:
-            let listVC = ListViewController()
+            firstVC = ListViewController()
             getDataFrom("https://tw.news.yahoo.com/rss/movies") {  data in
-                listVC.dataSource = data as [AnyObject]
+                self.firstVC.dataSource = data
                 DispatchQueue.main.async {
-                    listVC.tableView.reloadData()
+                    self.firstVC.mainTableView.reloadData()
                 }
             }
-            return listVC
+            return firstVC
         case 1:
-            let listVC = ListViewController()
-            listVC.dataSource = viewControllerDataSourceCollection[index] as [AnyObject]?
-            return listVC
+            secondVC = ListViewController()
+            getDataFrom("https://tw.news.yahoo.com/rss/society") {  data in
+                self.secondVC.dataSource = data
+                DispatchQueue.main.async {
+                    self.secondVC.mainTableView.reloadData()
+                }
+            }
+            return secondVC
         case 2:
-            let listVC = ListViewController()
-            listVC.dataSource = viewControllerDataSourceCollection[index] as [AnyObject]?
-            return listVC
+            thirdVC = ListViewController()
+            getDataFrom("https://tw.news.yahoo.com/rss/health") {  data in
+                self.thirdVC.dataSource = data
+                DispatchQueue.main.async {
+                    self.thirdVC.mainTableView.reloadData()
+                }
+            }
+            return thirdVC
         default:
             let vc = UIViewController()
             vc.view.backgroundColor = UIColor.green

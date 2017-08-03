@@ -10,21 +10,21 @@ import UIKit
 
 class ListViewController: UIViewController {
     
-    var dataSource: [AnyObject]?
+    var dataSource: [NewsItem]?
     var pageIndex = 0
     var buttonDataSource: [String]?
     
-    @IBOutlet weak var tableView: UITableView!
+    var mainTableView = UITableView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView = UITableView(frame: UIScreen.main.bounds, style: UITableViewStyle.plain)
+        mainTableView = UITableView(frame: UIScreen.main.bounds, style: UITableViewStyle.plain)
         
-        tableView.delegate = self
-        tableView.dataSource = self
+        mainTableView.delegate = self
+        mainTableView.dataSource = self
         
-        self.view.addSubview(tableView)
-        tableView?.reloadData()
+        self.view.addSubview(mainTableView)
+        mainTableView.reloadData()
     }
 
 }
@@ -43,7 +43,7 @@ extension ListViewController: UITableViewDataSource {
         let cell = UITableViewCell()
         
         if let data = dataSource {
-            cell.textLabel?.text = data[indexPath.row] as? String
+            cell.textLabel?.text = data[indexPath.row].title
         }
         
         return cell

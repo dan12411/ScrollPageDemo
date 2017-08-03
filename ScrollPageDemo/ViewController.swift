@@ -175,7 +175,7 @@ extension ViewController: UIScrollViewDelegate {
         let pageWidth = UIScreen.main.bounds.width
         let page = Int(floor((scrollView.contentOffset.x - pageWidth / 2) /
             pageWidth)) + 1
-        guard page < pageCount else {
+        guard page < pageCount && page > -1 else {
             return
         }
         currentPage = page
