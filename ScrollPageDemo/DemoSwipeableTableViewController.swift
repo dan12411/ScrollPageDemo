@@ -62,6 +62,10 @@ class DemoSwipeableTableViewController: UIViewController {
 
         swipeableView.titleBarDataSource = titleBarDataSource
         swipeableView.delegate = self
+        swipeableView.buttonWidth = 70
+        swipeableView.selectionBarHeight = 2
+        swipeableView.defaultSelectionBarBgColor = UIColor.orange
+        swipeableView.buttonPadding = (UIScreen.main.bounds.width - CGFloat(210))/7
         swipeableView.viewFrame = CGRect(x: 0.0, y: 64.0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height-64.0)
         kSelectionBarSwipeConstant = CGFloat(titleBarDataSource.count)
         
@@ -109,3 +113,4 @@ extension DemoSwipeableTableViewController: SwipeableTableViewControllerDelegate
         }
     }
 }
+
