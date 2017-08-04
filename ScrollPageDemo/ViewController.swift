@@ -28,6 +28,8 @@ class ViewController: UIViewController {
         }
     }
     
+    var currentOrientationIsPortrait : Bool = true
+    
     // For Download URLSession
     lazy var session: URLSession = {
         return URLSession(configuration: .default)
@@ -66,27 +68,10 @@ class ViewController: UIViewController {
         self.scrollView.addSubview(thirdVC.view)
         thirdVC.willMove(toParentViewController: self)
         
-        firstVC.view.translatesAutoresizingMaskIntoConstraints = false
-        secondVC.view.translatesAutoresizingMaskIntoConstraints = false
-        thirdVC.view.translatesAutoresizingMaskIntoConstraints = false
+        firstVC.view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        secondVC.view.frame = CGRect(x: self.view.frame.width, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        thirdVC.view.frame = CGRect(x: self.view.frame.width*CGFloat(2), y: 0, width: self.view.frame.width, height: self.view.frame.height)
         
-        firstVC.view.frame.origin = CGPoint.zero
-        NSLayoutConstraint(item: firstVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
-        NSLayoutConstraint(item: firstVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
-        NSLayoutConstraint(item: firstVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: firstVC.view, attribute: .leading, relatedBy: .equal, toItem: scrollView, attribute: .leading, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: firstVC.view, attribute: .trailing, relatedBy: .equal, toItem: secondVC.view, attribute: .leading, multiplier: 1, constant: 0).isActive = true
-        
-        secondVC.view.frame.origin = CGPoint(x: UIScreen.main.bounds.width, y: 0)
-        NSLayoutConstraint(item: secondVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
-        NSLayoutConstraint(item: secondVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
-        NSLayoutConstraint(item: secondVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: secondVC.view, attribute: .trailing, relatedBy: .equal, toItem: thirdVC.view, attribute: .leading, multiplier: 1, constant: 0).isActive = true
-        
-        thirdVC.view.frame.origin = CGPoint(x: UIScreen.main.bounds.width * CGFloat(2), y: 0)
-        NSLayoutConstraint(item: thirdVC.view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width).isActive = true
-        NSLayoutConstraint(item: thirdVC.view, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: scrollView.bounds.height).isActive = true
-        NSLayoutConstraint(item: thirdVC.view, attribute: .top, relatedBy: .equal, toItem: scrollView, attribute: .top, multiplier: 1, constant: 0).isActive = true
     }
     
     private func getDataFrom(_ url: String, completionHandler: @escaping ([NewsItem])->Void){
@@ -164,6 +149,39 @@ class ViewController: UIViewController {
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+    
+    // MARK: - Orientation Change
+    
+    override open func viewDidLayoutSubviews() {
+        
+        scrollView.contentSize = CGSize(width: self.view.frame.width * CGFloat(self.pageCount), height: scrollView.bounds.size.height)
+        
+        let oldCurrentOrientationIsPortrait : Bool = currentOrientationIsPortrait
+        
+        if UIDevice.current.orientation != UIDeviceOrientation.unknown {
+            currentOrientationIsPortrait = UIDevice.current.orientation.isPortrait || UIDevice.current.orientation.isFlat
+        }
+        
+        if (oldCurrentOrientationIsPortrait && UIDevice.current.orientation.isLandscape) || (!oldCurrentOrientationIsPortrait && (UIDevice.current.orientation.isPortrait || UIDevice.current.orientation.isFlat)) {
+            
+            for view in scrollView.subviews {
+                if view == firstVC.view {
+                    view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+                }
+                if view == secondVC.view {
+                    view.frame = CGRect(x: self.view.frame.width, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+                }
+                if view == thirdVC.view {
+                    view.frame = CGRect(x: self.view.frame.width*CGFloat(2), y: 0, width: self.view.frame.width, height: self.view.frame.height)
+                }
+            }
+            
+            let xOffset : CGFloat = CGFloat(self.currentPage) * scrollView.frame.width
+            scrollView.setContentOffset(CGPoint(x: xOffset, y: scrollView.contentOffset.y), animated: false)
+        }
+        
+        self.view.layoutIfNeeded()
     }
 }
 
