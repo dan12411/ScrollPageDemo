@@ -155,7 +155,7 @@ class ViewController: UIViewController {
     
     override open func viewDidLayoutSubviews() {
         
-        scrollView.contentSize = CGSize(width: self.view.frame.width * CGFloat(self.pageCount), height: scrollView.bounds.size.height)
+        scrollView.contentSize = CGSize(width: self.view.frame.width * CGFloat(self.pageCount), height: self.view.frame.height)
         
         let oldCurrentOrientationIsPortrait : Bool = currentOrientationIsPortrait
         

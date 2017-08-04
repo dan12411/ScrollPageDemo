@@ -25,6 +25,12 @@ class ListViewController: UIViewController {
         
         self.view.addSubview(mainTableView)
         mainTableView.reloadData()
+        
+        mainTableView.translatesAutoresizingMaskIntoConstraints = false
+        let attributes: [NSLayoutAttribute] = [.top, .bottom, .right, .left]
+        NSLayoutConstraint.activate(attributes.map {
+            NSLayoutConstraint(item: mainTableView, attribute: $0, relatedBy: .equal, toItem: view, attribute: $0, multiplier: 1, constant: 0)
+        })
     }
 
 }
